@@ -1,7 +1,6 @@
 import { type Request, type Response } from 'express';
 import { createTask, getAllTasks, updateTaskStatus } from '../models/tasks.model';
 import type { NewTaskInput, Task } from '../types/task';
-import { get } from 'http';
 
 export const generatePart = async ( req: Request<{}, {}, NewTaskInput>, res: Response<Pick<Task, "id" | "status"> | { error: string }>) => {
     try {

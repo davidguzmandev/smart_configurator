@@ -6,7 +6,7 @@ const connectionString = process.env.DATABASE_URL;
 
 export const pool = new Pool({
   connectionString,
-  ssl: false // o { rejectUnauthorized: false } si usas hosting con SSL obligatorio
+  ssl: false // o { rejectUnauthorized: false } si uso hosting con SSL obligatorio
 });
 
 export async function testConnection() {
