@@ -1,5 +1,5 @@
 import { type Request, type Response } from 'express';
-import { createTask, getAllTasks, updateTaskStatus } from '../models/tasks';
+import { createTask, getAllTasks, updateTaskStatus } from '../models/tasks.model';
 import type { NewTaskInput, Task } from '../types/task';
 import { get } from 'http';
 
