@@ -1,11 +1,13 @@
 import express, { type Request, type Response } from 'express';
 import { testConnection } from './db/db';
+import cors from 'cors';
 
 const app = express();
 const PORT: number = Number(process.env.PORT) || 3000;
 
 //Middleware base
 app.use(express.json());
+app.use(cors());
 
 //Ruta de prueba temporal
 app.get("/", (request: Request, response: Response): void=> {

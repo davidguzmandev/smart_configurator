@@ -4,4 +4,5 @@ import { generatePart, listTasks, markTaskAsDone } from '../controllers/tasks.co
 const router = Router();
 
 router.post('/generate-part', generatePart);
-router.post('/tasks', listTasks);
+router.get('/tasks', listTasks);
+router.patch('/update-task/:id', markTaskAsDone);
