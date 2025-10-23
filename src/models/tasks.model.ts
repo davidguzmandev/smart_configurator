@@ -33,13 +33,15 @@ export const updateTaskStatus = async (
   let params: any[] = [];
 
   if (status === "processing") {
-    query = "UPDATE tasks SET status=$1::task_status, started_at=$2 WHERE id=$3 RETURNING *";
+    query =
+      "UPDATE tasks SET status=$1, started_at=$2 WHERE id=$3 RETURNING *";
     params = [status, now, id];
   } else if (status === "done") {
-    query = "UPDATE tasks SET status=$1::task_status, completed_at=$2 WHERE id=$3 RETURNING *";
+    query =
+      "UPDATE tasks SET status=$1, completed_at=$2 WHERE id=$3 RETURNING *";
     params = [status, now, id];
   } else {
-    query = "UPDATE tasks SET status=$1::task_status WHERE id=$2 RETURNING *";
+    query = "UPDATE tasks SET status=$1 WHERE id=$2 RETURNING *";
     params = [status, id];
   }
 
