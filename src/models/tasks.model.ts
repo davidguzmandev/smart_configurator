@@ -28,18 +28,24 @@ export const updateTaskStatus = async (
   id: number,
   status: Task["status"]
 ): Promise<Task> => {
-  const result = await pool.query<Task>(
-    `
-    UPDATE tasks
-    SET
-      status = $1,
-      started_at   = CASE WHEN $1 = 'processing' THEN NOW() ELSE started_at END,
-      completed_at = CASE WHEN $1 = 'done'       THEN NOW() ELSE completed_at END
-    WHERE id = $2
-    RETURNING *
-    `,
-    [status, id]
-  );
+  const now = new Date();
+  let query = "";
+  let params: any[] = [];
+
+  if (status === "processing") {
+    query = "UPDATE tasks SET status=$1::task_status, started_at=$2 WHERE id=$3 RETURNING *";
+    params = [status, now, id];
+  } else if (status === "done") {
+    query = "UPDATE tasks SET status=$1::task_status, completed_at=$2 WHERE id=$3 RETURNING *";
+    params = [status, now, id];
+  } else {
+    query = "UPDATE tasks SET status=$1::task_status WHERE id=$2 RETURNING *";
+    params = [status, id];
+  }
+
+  const result = await pool.query<Task>(query, params);
+
   if (!result.rows[0]) throw new Error("Failed to update task status");
+
   return result.rows[0];
 };
