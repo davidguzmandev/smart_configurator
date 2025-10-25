@@ -4,6 +4,7 @@ export interface Task {
   height: number;
   depth: number;
   status: "pending" | "processing" | "done";
+  name?: string;             // nuevo campo
   notes?: string;
   created_at: Date;
   started_at?: Date;

@@ -27,7 +27,8 @@ export const getAllTasks = async (): Promise<Task[]> => {
 
 export const updateTaskStatus = async (
   id: number,
-  status: Task["status"]
+  status: Task["status"],
+  name?: string
 ): Promise<Task> => {
   const now = new Date();
   let query = "";
@@ -46,23 +47,17 @@ export const updateTaskStatus = async (
   }
 
   const result = await pool.query<Task>(query, params);
-
   if (!result.rows[0]) throw new Error("Failed to update task status");
 
   const updated = result.rows[0];
 
-  // 👇 NUEVO: si la tarea pasó a 'done', insertamos la 'part'
-  if (updated.status === "done") {
-    // Evita duplicados si ya existe part para esta task (idempotencia)
+  // Si la tarea pasa a 'done' y viene el nombre del archivo
+  if (updated.status === "done" && name) {
     const existing = await getPartByTaskId(updated.id);
     if (!existing) {
-      // Construimos el nombre de la pieza: "cube_LxHxD.SLDPRT"
-      // Puedes hacerlo dinámico si luego soportas más familias de modelos
-      const partName = `cube_${updated.length}x${updated.height}x${updated.depth}.SLDPRT`;
-
       await createPart({
         task_id: updated.id,
-        name: partName,
+        name,
         length: updated.length,
         height: updated.height,
         depth: updated.depth,
