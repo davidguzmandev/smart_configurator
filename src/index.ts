@@ -12,9 +12,10 @@ const PORT: number = Number(process.env.PORT) || 3000;
 //Middleware base
 app.use(
   cors({
-    origin: ["http://localhost:5173", "http://127.0.0.1:5173"],
+    origin: ["http://localhost:5173", "http://127.0.0.1:5173", "https://davidguzman.dev", "https://www.davidguzman.dev", "https://www.davidguzman.dev/smart/",],
     methods: ["GET", "POST", "PATCH", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: true,
   })
 );
 app.use(express.json());
