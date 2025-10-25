@@ -55,13 +55,18 @@ export const updateTaskStatus = async (
   if (updated.status === "done" && name) {
     const existing = await getPartByTaskId(updated.id);
     if (!existing) {
+      const filePath = `/output/${name}`;
       await createPart({
         task_id: updated.id,
-        name,
-        length: updated.length,
-        height: updated.height,
-        depth: updated.depth,
+        base_model: "cube",
+        file_name: name,
+        file_path: filePath,
+        version_label: "v1",
+        volume: null,
       });
+      console.log(`✅ Part created for task ${updated.id}: ${name}`);
+    } else {
+      console.log(`ℹ️ Part for task ${updated.id} already exists`);
     }
   }
 
