@@ -1,5 +1,6 @@
 import { pool } from "../db/db";
 import type { Task, NewTaskInput } from "../types/task";
+import { createPart, getPartByTaskId } from "./parts.model";
 
 export const createTask = async (
   task: NewTaskInput
@@ -33,8 +34,7 @@ export const updateTaskStatus = async (
   let params: any[] = [];
 
   if (status === "processing") {
-    query =
-      "UPDATE tasks SET status=$1, started_at=$2 WHERE id=$3 RETURNING *";
+    query = "UPDATE tasks SET status=$1, started_at=$2 WHERE id=$3 RETURNING *";
     params = [status, now, id];
   } else if (status === "done") {
     query =
@@ -49,5 +49,26 @@ export const updateTaskStatus = async (
 
   if (!result.rows[0]) throw new Error("Failed to update task status");
 
-  return result.rows[0];
+  const updated = result.rows[0];
+
+  // 👇 NUEVO: si la tarea pasó a 'done', insertamos la 'part'
+  if (updated.status === "done") {
+    // Evita duplicados si ya existe part para esta task (idempotencia)
+    const existing = await getPartByTaskId(updated.id);
+    if (!existing) {
+      // Construimos el nombre de la pieza: "cube_LxHxD.SLDPRT"
+      // Puedes hacerlo dinámico si luego soportas más familias de modelos
+      const partName = `cube_${updated.length}x${updated.height}x${updated.depth}.SLDPRT`;
+
+      await createPart({
+        task_id: updated.id,
+        name: partName,
+        length: updated.length,
+        height: updated.height,
+        depth: updated.depth,
+      });
+    }
+  }
+
+  return updated;
 };

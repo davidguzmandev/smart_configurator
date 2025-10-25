@@ -3,6 +3,7 @@ import { testConnection } from './db/db';
 import cors from 'cors';
 import morgan from 'morgan';
 import tasksRouter from './routes/tasks.routes';
+import partsRoutes from "./routes/parts.routes";
 import { errorHandler } from './middleware/errorHandler';
 
 const app: Application =  express();
@@ -14,6 +15,7 @@ app.use(express.json());
 app.use(morgan('dev'));
 
 app.use('/api', tasksRouter);
+app.use("/api", partsRoutes);
 app.use(errorHandler);
 
 // Iniciar el servidor + probar conexion a DB
