@@ -1,0 +1,45 @@
+import { pool } from "../db/db";
+import type { Part, NewPartInput } from "../types/part";
+
+export const createPart = async (input: NewPartInput): Promise<Part> => {
+  const { task_id, name, length, height, depth } = input;
+  const result = await pool.query<Part>(
+    `INSERT INTO parts (task_id, name, length, height, depth, created_at)
+     VALUES ($1, $2, $3, $4, $5, NOW())
+     RETURNING id, task_id, name, length, height, depth, created_at`,
+    [task_id, name, length, height, depth]
+  );
+  if (!result.rows[0]) throw new Error("Failed to create part");
+  return result.rows[0];
+};
+
+export const getAllParts = async (): Promise<Part[]> => {
+  const result = await pool.query<Part>(
+    `SELECT id, task_id, name, length, height, depth, created_at
+     FROM parts
+     ORDER BY created_at DESC`
+  );
+  return result.rows;
+};
+
+export const getPartById = async (id: number): Promise<Part | null> => {
+  const result = await pool.query<Part>(
+    `SELECT id, task_id, name, length, height, depth, created_at
+     FROM parts
+     WHERE id = $1`,
+    [id]
+  );
+  return result.rows[0] ?? null;
+};
+
+export const getPartByTaskId = async (taskId: number): Promise<Part | null> => {
+  const result = await pool.query<Part>(
+    `SELECT id, task_id, name, length, height, depth, created_at
+     FROM parts
+     WHERE task_id = $1
+     ORDER BY created_at DESC
+     LIMIT 1`,
+    [taskId]
+  );
+  return result.rows[0] ?? null;
+};
